@@ -41,7 +41,7 @@ def calculate_tree_percentage(y_pred):
     return tree_percentage
 
 # Streamlit app
-st.title("Tree Detection App")
+st.title("Greenary Detection App")
 
 uploaded_file = st.file_uploader("Choose an image...", type="jpg")
 
