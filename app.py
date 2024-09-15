@@ -14,7 +14,12 @@ os.makedirs(PROCESSED_FOLDER, exist_ok=True)
 
 def process_image(file_path):
     # Use detectree to process the image
-    y_pred = dtr.Classifier().predict_img(file_path)
+    classifier = dtr.Classifier()
+    y_pred = classifier.predict_img(file_path)
+
+    # Convert y_pred to a NumPy array if it's not already
+    if isinstance(y_pred, Image.Image):
+        y_pred = np.array(y_pred)
 
     # Calculate the percentage of detected trees
     tree_percentage = calculate_tree_percentage(y_pred)
@@ -29,8 +34,8 @@ def process_image(file_path):
     return processed_image_path, tree_percentage
 
 def calculate_tree_percentage(y_pred):
-    # Convert y_pred to a NumPy array if it's not already
-    if isinstance(y_pred, Image.Image):
+    # Ensure y_pred is a NumPy array
+    if not isinstance(y_pred, np.ndarray):
         y_pred = np.array(y_pred)
 
     # Count white pixels (value of 255 for grayscale images)
@@ -41,9 +46,9 @@ def calculate_tree_percentage(y_pred):
     return tree_percentage
 
 # Streamlit app
-st.title("Greenary Detection App")
+st.title("Tree Detection App")
 
-uploaded_file = st.file_uploader("Choose an image...", type="jpg")
+uploaded_file = st.file_uploader("Choose an image...", type=["jpg", "jpeg"])
 
 if uploaded_file is not None:
     # Save the uploaded file
@@ -59,5 +64,4 @@ if uploaded_file is not None:
     st.write(f"Tree Percentage: {tree_percentage:.2f}%")
 
     # Display processed image
-    with open(processed_file_path, "rb") as f:
-        st.image(f.read(), caption='Processed Image', use_column_width=True)
+    st.image(processed_file_path, caption='Processed Image', use_column_width=True)
